@@ -18,9 +18,9 @@ class CollectionViewGridLayoutInvalidationContext: UICollectionViewLayoutInvalid
 
 @objc protocol CollectionViewGridLayoutDelegate: class {
     
-    @objc func collectionView(_ collectionView: UICollectionView,
-                              gridLayout: UICollectionViewLayout,
-                              estimatedHeightForItemAt indexPath: IndexPath) -> CGFloat
+    @objc func heightForIndexPath(_ collectionView: UICollectionView,
+                                  indexPath: IndexPath,
+                                  width: CGFloat) -> CGFloat
 }
 
 // MARK: CollectionViewGridLayout
@@ -33,7 +33,7 @@ class CollectionViewGridLayout: UICollectionViewLayout {
 
     // MARK: Variables
 
-    @IBInspectable var estimatedRowHeight: CGFloat = 500
+    @IBInspectable var estimatedRowHeight: CGFloat = 50
 
     private var layoutAttributesForItems: [CollectionViewGridLayoutAttribute] = []
     private var contentHeight: CGFloat = 0
@@ -150,7 +150,8 @@ class CollectionViewGridLayout: UICollectionViewLayout {
         print("original", originalAttributes.frame)
         
         var flag = true
-        if preferredAttributes.frame.size.height == originalAttributes.frame.size.height && originalAttributes.frame.size.width == cellWidth {
+        let columnWidth = contentWidth / CGFloat(numberOfColumns)
+        if preferredAttributes.frame.size.height == originalAttributes.frame.size.height && originalAttributes.frame.size.width == columnWidth {
             flag = false
         }
 
@@ -176,8 +177,8 @@ class CollectionViewGridLayout: UICollectionViewLayout {
         print("")
         print("-------------------------------------------------------------------------------")
         print("invalidationContext:forPreferredLayoutAttributes:withOriginalAttributes")
-        print("preferred", preferredAttributes.frame)
-        print("original", originalAttributes.frame)
+        print("preferred - indexPath", preferredAttributes.frame, preferredAttributes.indexPath)
+        print("original - indexPath", originalAttributes.frame, originalAttributes.indexPath)
         print("-------------------------------------------------------------------------------")
         
         let context = super.invalidationContext(forPreferredLayoutAttributes: preferredAttributes,
@@ -267,13 +268,9 @@ class CollectionViewGridLayout: UICollectionViewLayout {
             for row in (0..<dataSource.collectionView(collectionView, numberOfItemsInSection: section)) {
                 let indexPath = IndexPath(row: row, section: section)
 
-                let estimatedHeightForItem: CGFloat
-                if let height = delegate?.collectionView(collectionView, gridLayout: self, estimatedHeightForItemAt: indexPath) {
-                    estimatedHeightForItem = height
-                } else {
-                    estimatedHeightForItem = estimatedRowHeight
-                }
-
+                let estimatedHeightForItem = delegate?.heightForIndexPath(collectionView,
+                                                                          indexPath: IndexPath(item: row, section: section),
+                                                                          width: columnWidth) ?? 50
                 let frame = CGRect(x: xOffset[column], y: yOffset[column], width: columnWidth, height: estimatedHeightForItem)
                 let insetFrame = frame.insetBy(dx: collectionView.contentInset.left, dy: collectionView.contentInset.right)
 

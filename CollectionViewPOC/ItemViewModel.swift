@@ -27,4 +27,15 @@ class ItemViewModel {
     func toggle() {
         isExpanded = !isExpanded
     }
+    
+    func calculateHeight(for width: CGFloat) -> CGFloat {
+//        let textView = UITextView()
+//        textView.text = displayedText
+//        textView.pin.top(16).bottom(16).horizontally(16).sizeToFit(.)
+////        label.pin.layout()
+        let height = displayedText.heightWithConstrainedWidth(width: width, font: UIFont.systemFont(ofSize: 15)) + 32
+//        print(height)
+//        print(displayedText)
+        return height
+    }
 }

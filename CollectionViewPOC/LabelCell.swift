@@ -11,38 +11,47 @@ import PinLayout
 
 class LabelCell: UICollectionViewCell {
     
-    @IBOutlet weak var titleLabel: UILabel!
+    @IBOutlet weak var textView: UITextView!
     
     func configure(label: String, color: UIColor) {
-        titleLabel.text = label
+        textView.backgroundColor = .clear
+        textView.isEditable = false
+        textView.text = label
+        textView.font = UIFont.systemFont(ofSize: 15)
         contentView.backgroundColor = color
     }
     
 //    override func layoutSubviews() {
-//        contentView.pin.all(pin.safeArea)
-//        titleLabel.pin.all(16)
+//        super.layoutSubviews()
+////        contentView.pin.all(pin.safeArea)
+//        textView.pin.top(16).bottom(16).horizontally(16).sizeToFit(.widthFlexible)
+//        contentView.pin.height(textView.frame.maxY + 16)
 //    }
     
     override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
-        setNeedsLayout()
-        layoutIfNeeded()
-
         let preferredLayoutAttributes = layoutAttributes
-
-        var fittingSize = UIView.layoutFittingCompressedSize
-        fittingSize.width = preferredLayoutAttributes.size.width
-        let size = contentView.systemLayoutSizeFitting(fittingSize,
-                                                       withHorizontalFittingPriority: .required,
-                                                       verticalFittingPriority: .defaultLow)
-        var adjustedFrame = preferredLayoutAttributes.frame
-        adjustedFrame.size.height = ceil(size.height)
-        preferredLayoutAttributes.frame = adjustedFrame
-
-//        print("")
-//        print("-------------------------------------------------------------------------------")
-//        print("LabelCell preferredLayoutAttributesFitting", preferredLayoutAttributes.frame)
-//        print("-------------------------------------------------------------------------------")
-
+        let height = textView.text.heightWithConstrainedWidth(width: layoutAttributes.size.width, font: UIFont.systemFont(ofSize: 15)) + 32
+        preferredLayoutAttributes.size.height = height
         return preferredLayoutAttributes
+//        setNeedsLayout()
+//        layoutIfNeeded()
+//
+//        let preferredLayoutAttributes = layoutAttributes
+//
+//        var fittingSize = UIView.layoutFittingCompressedSize
+//        fittingSize.width = preferredLayoutAttributes.size.width
+//        let size = contentView.systemLayoutSizeFitting(fittingSize,
+//                                                       withHorizontalFittingPriority: .required,
+//                                                       verticalFittingPriority: .defaultLow)
+//        var adjustedFrame = preferredLayoutAttributes.frame
+//        adjustedFrame.size.height = titleLabel.frame.size.height + 32
+//        preferredLayoutAttributes.frame = adjustedFrame
+//
+////        print("")
+////        print("-------------------------------------------------------------------------------")
+////        print("LabelCell preferredLayoutAttributesFitting", preferredLayoutAttributes.frame)
+////        print("-------------------------------------------------------------------------------")
+//
+//        return preferredLayoutAttributes
     }
 }
